@@ -41,16 +41,16 @@ namespace BeatSaberLocalProfiles
                 gameEnergyCounter = FindFirstOrDefault<GameEnergyCounter>();
                 gameplayManager = FindFirstOrDefault<StandardLevelGameplayManager>();
                 //beatmapObjectCallbackController = FindFirstOrDefault<BeatmapObjectCallbackController>();
-                
+
                 // Register event listeners
                 // private GameEvent GamePauseManager#_gameDidPauseSignal
                 //AddSubscriber(gamePauseManager, "_gameDidPauseSignal", OnGamePause);
                 // private GameEvent GamePauseManager#_gameDidResumeSignal
                 //AddSubscriber(gamePauseManager, "_gameDidResumeSignal", OnGameResume);
                 // public ScoreController#noteWasCutEvent<NoteData, NoteCutInfo, int multiplier> // called after AfterCutScoreBuffer is created
-                //scoreController.noteWasCutEvent += OnNoteWasCut;
+                scoreController.noteWasCutEvent += OnNoteWasCut;
                 // public ScoreController#noteWasMissedEvent<NoteData, int multiplier>
-                //scoreController.noteWasMissedEvent += OnNoteWasMissed;
+                scoreController.noteWasMissedEvent += OnNoteWasMissed;
                 // public ScoreController#scoreDidChangeEvent<int> // score
 
                 scoreController.scoreDidChangeEvent += OnScoreDidChange;
@@ -97,6 +97,7 @@ namespace BeatSaberLocalProfiles
                 gameStatus.bombsCount = diff.beatmapData.bombsCount;
                 gameStatus.obstaclesCount = diff.beatmapData.obstaclesCount;
                 gameStatus.maxScore = ScoreController.GetScoreForGameplayModifiersScoreMultiplier(ScoreController.MaxScoreForNumberOfNotes(diff.beatmapData.notesCount), modifierMultiplier);
+                gameStatus.maxPossibleScore = ScoreController.MaxScoreForNumberOfNotes(diff.beatmapData.notesCount);
                 gameStatus.maxRank = RankModel.MaxRankForGameplayModifiers(gameplayModifiers, gameplayModifiersSO).ToString();
                 
                 gameStatus.ResetPerformance();
@@ -116,7 +117,47 @@ namespace BeatSaberLocalProfiles
                 gameStatus.modStrictAngles = gameplayModifiers.strictAngles;
             }
         }
-        
+
+
+        public void OnNoteWasMissed(NoteData noteData, int multiplier)
+        {
+            // Event order: combo, multiplier, scoreController.noteWasMissed, (LateUpdate) scoreController.scoreDidChange
+
+            gameStatus.batteryEnergy = gameEnergyCounter.batteryEnergy;
+
+            if (noteData.noteType == NoteType.Bomb)
+            {
+                gameStatus.passedBombs++;
+            }
+            else
+            {
+                gameStatus.passedNotes++;
+                gameStatus.missedNotes++;
+            }
+        }
+
+        public void OnNoteWasCut(NoteData noteData, NoteCutInfo noteCutInfo, int multiplier)
+        {
+            if (noteData.noteType == NoteType.Bomb)
+            {
+                gameStatus.passedBombs++;
+                gameStatus.hitBombs++;
+            }
+            else
+            {
+                gameStatus.passedNotes++;
+
+                if (noteCutInfo.allIsOK)
+                {
+                    gameStatus.hitNotes++;
+                }
+                else
+                {
+                    gameStatus.missedNotes++;
+                }
+            }
+        }
+
         private void OnBeatmapEventDidTrigger(BeatmapEventData beatmapEventData)
         {
             gameStatus.beatmapEventType = (int)beatmapEventData.type;

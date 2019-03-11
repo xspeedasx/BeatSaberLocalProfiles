@@ -28,6 +28,7 @@ namespace BeatSaberLocalProfiles
         public int bombsCount = 0;
         public int obstaclesCount = 0;
         public int maxScore = 0;
+        public int maxPossibleScore = 0;
         public string maxRank = "E";
 
         // Performance

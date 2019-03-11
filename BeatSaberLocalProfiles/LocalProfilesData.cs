@@ -13,13 +13,15 @@ namespace BeatSaberLocalProfiles
     {
         public Dictionary<string, SongInfo> SongScores;
         //private string CurrentProfile = "meowtastic";
-        public string CurrentProfile = "xspeedasx";
+        //public string CurrentProfile = "xspeedasx";
+        public string CurrentProfile = "testing";
         public string ScoreDirPath;
 
-        //public LocalProfilesData()
-        //{
-        //    OnLoad();
-        //}
+        public SongInfo lastSong;
+        public SongDifficulty lastDiff;
+        public Profile lastProfile;
+        public Score lastScore;
+
 
         public void OnLoad()
         {

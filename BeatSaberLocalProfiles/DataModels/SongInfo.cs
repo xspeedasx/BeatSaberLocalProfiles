@@ -15,21 +15,15 @@ namespace BeatSaberLocalProfiles.DataModels
         public string Name = null;
         public string SubName = null;
         public string AuthorName = null;
-        public float BPM;
-        public float NoteJumpSpeed;
         public long Length = 0;
-        public string Difficulty = null;
-        public int NotesCount = 0;
-        public int BombsCount = 0;
-        public int ObstaclesCount = 0;
-        public int MaxScore = 0;
-        public string MaxRank = "E";
+        public float BPM;
 
-        public List<Profile> Profiles;
+        public List<SongDifficulty> Difficulties;
 
         public SongInfo()
         {
-            Profiles = new List<Profile>();
+            //Profiles = new List<Profile>();
+            Difficulties = new List<SongDifficulty>();
         }
     }
 }

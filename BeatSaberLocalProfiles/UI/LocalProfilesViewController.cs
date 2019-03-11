@@ -14,11 +14,12 @@ namespace BeatSaberLocalProfiles.UI
     {
         private Button _profileButton;
 
-        protected override void DidActivate(bool firstActivation, ActivationType type)
+        protected override void DidActivate(bool firstActivation, ActivationType activationType)
         {
-            var profilesData = Resources.FindObjectsOfTypeAll<LocalProfilesData>().FirstOrDefault();
-
-            _profileButton = CreateButton();
+            if (firstActivation && activationType == ActivationType.AddedToHierarchy)
+            {
+                _profileButton = CreateButton();
+            }
         }
 
         private Button CreateButton()

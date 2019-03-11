@@ -11,6 +11,7 @@ namespace BeatSaberLocalProfiles.UI
 {
     public class LocalProfilesUI : MonoBehaviour
     {
+        public bool initialized = false;
         private static LocalProfilesUI _instance;
         public static LocalProfilesUI Instance {
             get {
@@ -36,6 +37,7 @@ namespace BeatSaberLocalProfiles.UI
 
         private void SetupUI()
         {
+            if (initialized) return;
 
             RectTransform mainMenu = (Resources.FindObjectsOfTypeAll<MainMenuViewController>().First().rectTransform);
             LocalProfilesMenuButton = MenuButtonUI.AddButton("Local Profiles", "Configure local profiles.", LocalProfilesButtonPressed);
@@ -74,6 +76,7 @@ namespace BeatSaberLocalProfiles.UI
             //    Plugin.Log("COULD NOT CREATE MENUUUUUUUUUUUUUUUUUU");
             //    Plugin.Log(ex + "", LogLevel.Error);
             //}
+            initialized = true;
         }
 
 

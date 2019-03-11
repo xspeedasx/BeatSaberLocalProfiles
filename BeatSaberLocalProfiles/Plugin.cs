@@ -83,6 +83,7 @@ namespace BeatSaberLocalProfiles
             if (newScene.name == "Menu")
             {
                 LocalProfilesUI.Instance.OnLoad();
+                ProfileSongResultUI.Instance.OnLoad();
             }
 
         }
@@ -119,28 +120,44 @@ namespace BeatSaberLocalProfiles
                         Name = gameStatus.songName,
                         SubName = gameStatus.songSubName,
                         AuthorName = gameStatus.songAuthorName,
-                        BombsCount = gameStatus.bombsCount,
                         BPM = gameStatus.songBPM,
+                        Length = gameStatus.length
+                    };
+                    songScores.Add(song.Hash, song);
+                }
+
+                localProfilesData.lastSong = song;
+
+                var difficulty = song.Difficulties.FirstOrDefault(x => x.Difficulty == gameStatus.difficulty);
+                if(difficulty == null)
+                {
+                    difficulty = new SongDifficulty()
+                    {
                         Difficulty = gameStatus.difficulty,
-                        Length = gameStatus.length,
+                        BombsCount = gameStatus.bombsCount,
                         MaxRank = gameStatus.maxRank,
                         MaxScore = gameStatus.maxScore,
                         NoteJumpSpeed = gameStatus.noteJumpSpeed,
                         NotesCount = gameStatus.notesCount,
                         ObstaclesCount = gameStatus.obstaclesCount
                     };
-                    songScores.Add(song.Hash, song);
+                    song.Difficulties.Add(difficulty);
                 }
 
-                var profile = song.Profiles.FirstOrDefault(x => x.Name == localProfilesData.CurrentProfile);
+                localProfilesData.lastDiff = difficulty;
+
+                var profile = difficulty.Profiles.FirstOrDefault(x => x.Name == localProfilesData.CurrentProfile);
                 if (profile == null)
                 {
                     profile = new Profile()
                     {
                         Name = localProfilesData.CurrentProfile
                     };
-                    song.Profiles.Add(profile);
+                    difficulty.Profiles.Add(profile);
                 }
+
+                localProfilesData.lastProfile = profile;
+
 
                 //var scores = profile.Scores.ContainsKey(gameStatus.songHash) ? profile.Scores[gameStatus.songHash] : null;
                 //if (scores == null)
@@ -151,7 +168,7 @@ namespace BeatSaberLocalProfiles
                 var score = new Score()
                 {
                     score = gameStatus.score,
-                    currentMaxScore = gameStatus.currentMaxScore,
+                    maxPossibleScore = gameStatus.currentMaxScore,
                     rank = gameStatus.rank,
                     passedNotes = gameStatus.passedNotes,
                     hitNotes = gameStatus.hitNotes,
@@ -160,10 +177,25 @@ namespace BeatSaberLocalProfiles
                     hitBombs = gameStatus.hitBombs,
                     maxCombo = gameStatus.maxCombo,
                     timePlayed = GameStatusTracker.GetCurrentTime() - gameStatus.start,
-                    timestamp = (int)(GameStatusTracker.GetCurrentTime() / 1000)
-                };
+                    timestamp = (int)(GameStatusTracker.GetCurrentTime() / 1000),
+
+                    modifierMultiplier = gameStatus.modifierMultiplier,
+                    
+                    batteryLives = gameStatus.batteryLives, 
+                    modObstacles = gameStatus.modObstacles,
+                    modInstaFail = gameStatus.modInstaFail,
+                    modNoFail = gameStatus.modNoFail,
+                    modBatteryEnergy = gameStatus.modBatteryEnergy,
+                    modDisappearingArrows = gameStatus.modDisappearingArrows,
+                    modNoBombs = gameStatus.modNoBombs,
+                    modSongSpeed = gameStatus.modSongSpeed,
+                    modFailOnSaberClash = gameStatus.modFailOnSaberClash,
+                    modStrictAngles = gameStatus.modStrictAngles
+            };
 
                 profile.Scores.Add(score);
+
+                localProfilesData.lastScore = score;
 
 
                 //var js = Newtonsoft.Json.JsonConvert.SerializeObject(gameStatus, Newtonsoft.Json.Formatting.Indented);
